@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en-my">
+<head>
+	<title>CHATTY</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+<link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/8/85/MCMC_Logo.png"/>	
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="dist/jquery.convform.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="aTidaknymous">
+	<link rel="stylesheet" type="text/css" href="demo.css">
+</head>
+<body>
+<center><img src="https://upload.wikimedia.org/wikipedia/commons/8/85/MCMC_Logo.png" width="45" height="45"/></center>
+	<section id="demo">
+	    <div class="vertical-align">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-sm-6 col-sm-offset-3 col-xs-offset-0">
+	                    <div class="card Tidak-border">
+	                        <div id="chat" class="conv-form-wrapper">
+	                            <form action="" method="GET" class="hidden">
+	                                <select data-conv-question="Apa Khabar, boleh mengetahui nama anda?" name="first-question">
+	                                    <option value="Ya">Ya</option>
+	                                    <option value="baiklah">Baiklah</option>
+	                                </select>
+	                                <input type="text" name="name" data-conv-question="Nyatakan Nama Anda!">
+	                                <input type="text" data-conv-question="Apa khabar, {name}:0! Baik untuk berkenalan!" data-Tidak-answer="true">
+	                                <input type="text" data-conv-question="Plugin Ini disertai pelbagai pilihan!" data-Tidak-answer="true">
+	                                <select name="multi[]" data-conv-question="Apakah Genre Kegemaran Anda?" multiple>
+	                                    <option value="Rock">Rock</option>
+	                                    <option value="Pop">Pop</option>
+	                                    <option value="Country">Country</option>
+	                                    <option value="Classic">Classic</option>
+	                                </select>
+	                                <select name="programmer" data-callback="storeState" data-conv-question="Adakah anda seorang Programmer?">
+	                                    <option value="Ya">Ya</option>
+	                                    <option value="Tidak">Tidak</option>
+	                                </select>
+	                                <div data-conv-fork="programmer">
+	                                    <div data-conv-case="Ya">
+	                                        <input type="text" data-conv-question="Hi! Programmers!" data-Tidak-answer="true">
+	                                    </div>
+	                                    <div data-conv-case="Tidak">
+		                                    <select name="thought" data-conv-question="Pernah Belajar Programming?">
+		                                    	<option value="Ya">Ya</option>
+		                                    	<option value="Tidak">Tidak</option>
+		                                    </select>
+	                                    </div>
+	                                </div>
+	                                <input type="text" data-conv-question="Wow! Saya adalah System Chatty yang ditadbir oleh Alexander Eric@Eric Lapin. Selamat Berkenalan!" data-Tidak-answer="true">
+	                                <input data-conv-question="Masukkan Email anda!" data-pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$" id="email" type="email" name="email" required placeholder="What's your e-mail?">
+	                                <input data-conv-question="Masukkan kata laluan anda!" type="password" data-minlength="6" id="senha" name="password" required placeholder="password">
+									<select data-conv-question="Hubungi server... :">
+											<option value="google" data-callback="google">Google</option>
+											<option value="bing" data-callback="bing">Bing</option>
+									</select>
+	                                <select name="callbackTest" data-conv-question="Gunakan fungsi panggilan semula?">
+	                                    <option value="Ya" data-callback="rollback">Ya</option>
+	                                    <option value="Tidak" data-callback="restore">Tidak</option>
+	                                </select>
+	                                <select data-conv-question="Terima Kasih kerana menyertai seisi ini" id="">
+	                                    <option value="">Kembali!</option>
+	                                </select>
+	                            </form>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</section>
+	<script type="text/javascript" src="jquery-1.12.3.min.js"></script>
+	<script type="text/javascript" src="dist/autosize.min.js"></script>
+	<script type="text/javascript" src="dist/jquery.convform.js"></script>
+
+	<script>
+		function google(stateWrapper, ready) {
+			window.open("https://google.com");
+			ready();
+		}
+		function bing(stateWrapper, ready) {
+			window.open("https://bing.com");
+			ready();
+		}
+		var rollbackTo = false;
+		var originalState = false;
+		function storeState(stateWrapper, ready) {
+			rollbackTo = stateWrapper.current;
+			console.log("storeState called: ",rollbackTo);
+			ready();
+		}
+		function rollback(stateWrapper, ready) {
+			console.log("rollback called: ", rollbackTo, originalState);
+			console.log("answers at the time of user input: ", stateWrapper.answers);
+			if(rollbackTo!=false) {
+				if(originalState==false) {
+					originalState = stateWrapper.current.next;
+						console.log('stored original state');
+				}
+				stateWrapper.current.next = rollbackTo;
+				console.log('changed current.next to rollbackTo');
+			}
+			ready();
+		}
+		function restore(stateWrapper, ready) {
+			if(originalState != false) {
+				stateWrapper.current.next = originalState;
+				console.log('changed current.next to originalState');
+			}
+			ready();
+		}
+	</script>
+	<script>
+		jQuery(function($){
+			convForm = $('#chat').convform({selectInputStyle: 'disable'});
+			console.log(convForm);
+		});
+	</script>
+</body>
+</html>
